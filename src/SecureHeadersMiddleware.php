@@ -19,13 +19,13 @@ class SecureHeadersMiddleware
     public function handle(Request $request, Closure $next)
     {
         $response = $next($request);
+        if (config('app.env') === 'production') {
+          $headers = (new SecureHeaders(config('secure-headers', [])))->headers();
 
-        $headers = (new SecureHeaders(config('secure-headers', [])))->headers();
-
-        foreach ($headers as $key => $value) {
-            $response->headers->set($key, $value, true);
+          foreach ($headers as $key => $value) {
+              $response->headers->set($key, $value, true);
+          }
         }
-
         return $response;
     }
 }
